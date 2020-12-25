@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:formvalidation/src/bloc/provider.dart';
 import 'package:formvalidation/src/models/producto_model.dart';
-import 'package:formvalidation/src/providers/productos_provider.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -14,7 +13,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lustado productos")
+        title: Text("Listado productos")
       ),
       body: _crearListado(productosBloc),
       floatingActionButton: _crearButton(context),
@@ -59,7 +58,11 @@ class HomePage extends StatelessWidget {
       title: Text('${producto.titulo} - ${producto.valor}'),
       subtitle: Text( producto.disponible.toString() ),
       trailing: Icon( Icons.arrow_right ),
-      onTap: () => Navigator.pushNamed(context, "producto", arguments: producto),
+      onTap: () async {
+
+        await Navigator.pushNamed(context, "producto", arguments: producto);
+
+      } 
     );
   }
 

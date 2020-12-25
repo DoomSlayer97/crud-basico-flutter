@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:formvalidation/src/bloc/provider.dart';
 import 'package:formvalidation/src/models/producto_model.dart';
-import 'package:formvalidation/src/providers/productos_provider.dart';
 import 'package:formvalidation/src/utils/utils.dart' as utils;
 
 class ProductoPage extends StatefulWidget {
@@ -18,6 +16,9 @@ class _ProductoPageState extends State<ProductoPage> {
 
   ProductosBloc productosBloc;
   Producto producto = new Producto();
+
+  bool _salidaAlert = false;
+  bool _guardando = false;
 
   bool _esNuevo = true;
 
@@ -56,7 +57,7 @@ class _ProductoPageState extends State<ProductoPage> {
               ],
             ),
           ),
-        ),
+        )
       )
     );
   }
@@ -65,13 +66,54 @@ class _ProductoPageState extends State<ProductoPage> {
 
     if (!_esNuevo) return IconButton(
       icon: Icon( Icons.delete ),
-      onPressed: () {
-      
-        productosBloc.eliminarProducto(producto.id);
+      onPressed: ()  async {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Atencion"),
+            content: Text("¿Desea eliminar el producto?"),
+            actions: [
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
 
-        productosBloc.cargarProductos();
+                  productosBloc.eliminarProducto(producto.id);
 
-        Navigator.pop(context);
+                  setState(() {
+
+                    _salidaAlert = true;           
+                    Navigator.of(context).pop();    
+
+                  });
+
+
+                },
+              ),
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () {
+
+                  setState(() {
+
+                    _salidaAlert = false;           
+                    Navigator.of(context).pop();    
+                    
+                  });
+
+                  
+                },
+              )
+            ],
+          )
+        );
+        
+        if (_salidaAlert) {
+
+          Navigator.pop(context);
+
+        }
+
+
 
       },
     );
@@ -142,6 +184,8 @@ class _ProductoPageState extends State<ProductoPage> {
 
     formKey.currentState.save();
 
+    setState(() {_guardando = true; });
+
     if ( producto.id == null ) {
 
       productosBloc.agregarProducto(producto);
@@ -151,8 +195,6 @@ class _ProductoPageState extends State<ProductoPage> {
       productosBloc.editarProducto(producto);
 
     }
-
-    productosBloc.cargarProductos();
 
     Navigator.pop(context);
 

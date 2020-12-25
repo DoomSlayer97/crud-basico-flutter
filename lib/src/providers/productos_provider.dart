@@ -12,15 +12,11 @@ class ProductsProvider {
 
     final url = "$_url/productos";
 
-    print( productoToJson( producto ) );
-
     final resp = await http.post( url, body: productoToJson( producto ), headers: {
       "Content-Type": "application/json"
     });
 
     final decodedData = json.decode(resp.body);
-
-    print( decodedData );
 
     return true;
 
@@ -30,15 +26,11 @@ class ProductsProvider {
 
     final url = "$_url/productos/${producto.id.toString()}";
 
-    print( productoToJson( producto ) );
-
     final resp = await http.put( url, body: productoToJson( producto ), headers: {
       "Content-Type": "application/json"
     });
 
     final decodedData = json.decode(resp.body);
-
-    print( decodedData );
 
     return true;
 
@@ -49,12 +41,10 @@ class ProductsProvider {
     final url = "$_url/productos";
     final resp = await http.get(url);
 
-    if (resp.body == null) return [];
-
     final List<dynamic> decodedData = json.decode(resp.body);
     final List<Producto> productos = new List();
 
-    if ( decodedData == null ) return [];
+    if (decodedData == null) return [];
 
     decodedData.forEach( (prod) {
 
@@ -64,7 +54,23 @@ class ProductsProvider {
 
     });
 
+    productos.forEach( (item) {
+      print(json.encode(item.toJson()));
+    });
+
     return productos;
+
+  }
+
+  Future<Producto> cargarProducto(int id) async {
+
+    final url = "$_url/productos/$id";
+
+    final resp = await http.get(url);
+
+    Producto findedProducto = Producto.fromJson( json.decode(resp.body) );
+
+    return findedProducto;
 
   }
 
@@ -73,8 +79,6 @@ class ProductsProvider {
     final url = "$_url/productos/$id";
 
     final resp = await http.delete(url);
-
-    print(resp.body);
 
     return 1;
 
